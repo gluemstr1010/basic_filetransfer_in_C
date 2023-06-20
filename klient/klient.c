@@ -24,6 +24,23 @@ void send_file(FILE *file, int net_socket)
    }
 }
 
+long get_file_size(char *filename) {
+    FILE *fp = fopen(filename, "r");
+
+    if (fp==NULL)
+        return -1;
+
+    if (fseek(fp, 0, SEEK_END) < 0) {
+        fclose(fp);
+        return -1;
+    }
+
+    long size = ftell(fp);
+    // release the resources when not required
+    fclose(fp);
+    return size;
+}
+
 int main(int argc, char *argv[])
 {
     char *filename = argv[2];
@@ -79,6 +96,10 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    long fileSizenum = get_file_size(filename);
+    long fileSize = htonl(fileSizenum);
+
+    write(net_socket,&fileSize,sizeof(fileSize));
     send_file(file, net_socket);
 
     printf("\nClosing connection ... \n");

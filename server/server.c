@@ -43,19 +43,18 @@ void write_file(int new_socket)
             break;
         }
     }
-    // int g = 0;
-    // while(true)
-    // { 
-    //     b = recv(new_socket,buffer,SIZE,0);
-    //     if(b > 0)
-    //     {
-    //         g+=b;
-    //     }else
-    //     {
-    //         break;
-    //     }
-    // }
-    file = fopen(filename,"w");
+    
+    int fileSize;
+
+    int return_status = read(new_socket, &fileSize, sizeof(fileSize));
+    if(return_status < 0)
+    {
+        
+    }
+
+    if( fileSize < 32000000 )
+    {
+        file = fopen(filename,"w");
         while(true)
         {
             b = recv(new_socket,buffer,SIZE,0);
@@ -67,6 +66,10 @@ void write_file(int new_socket)
             fprintf(file,"%s",buffer);
             bzero(buffer,SIZE);
         }
+    }else
+    {
+
+    }
     
     
     return;
