@@ -44,9 +44,10 @@ void write_file(int new_socket)
         }
     }
     
-    int fileSize;
+    int fileSize, tmp;
 
-    int return_status = read(new_socket, &fileSize, sizeof(fileSize));
+    int return_status = read(new_socket, &tmp, sizeof(fileSize));
+    fileSize = ntohl(tmp);
     if(return_status < 0)
     {
         
