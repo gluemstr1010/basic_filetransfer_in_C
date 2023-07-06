@@ -8,19 +8,19 @@
 #include <unistd.h>
 
 #define SIZE 1024
+#define FILEBUF 255
 void send_file(FILE *file, int net_socket)
 {
-    int n;
-    char data[SIZE] = {0};
+    char data[FILEBUF] = {0};
  
-  while(fgets(data, SIZE, file) != NULL)
+  while(fgets(data, FILEBUF, file) != NULL)
    {
     if (send(net_socket, data, sizeof(data), 0) == -1)
     {
       perror("[-]Error in sending file.");
       exit(1);
     }
-    bzero(data, SIZE);
+    bzero(data, FILEBUF);
    }
 }
 
@@ -44,7 +44,6 @@ long get_file_size(char *filename) {
 int main(int argc, char *argv[])
 {
     char *filename = argv[2];
-    char buffer[SIZE];
     if( argc > 2 )
     {
         if( strcmp(filename,"--file") == 1 )
@@ -80,7 +79,7 @@ int main(int argc, char *argv[])
     struct sockaddr_in server_address;
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(7070);
-    server_address.sin_addr.s_addr = INADDR_ANY;
+    server_address.sin_addr.s_addr = htonl(INADDR_ANY);
 
     int conn_status = connect(net_socket, (struct sockaddr *) &server_address, sizeof(server_address));
     if( conn_status == -1 )
@@ -99,7 +98,9 @@ int main(int argc, char *argv[])
     long fileSizenum = get_file_size(filename);
     long fileSize = htonl(fileSizenum);
 
+
     write(net_socket,&fileSize,sizeof(fileSize));
+
     send_file(file, net_socket);
 
     printf("\nClosing connection ... \n");

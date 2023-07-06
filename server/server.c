@@ -11,7 +11,7 @@
 #include "word.c"
 
 #define SIZE 1024
-
+#define FILEBUF 255
 
 bool file_exists(const char *filename)
 {
@@ -31,7 +31,7 @@ void write_file(int new_socket)
     FILE *file;
     const char* filename = malloc(32);
     filename = word();
-    char buffer[SIZE];
+    char buffer[FILEBUF];
     while(true)
     {
         if(file_exists(filename))
@@ -53,19 +53,21 @@ void write_file(int new_socket)
         
     }
 
+    printf("\n%d",fileSize);
+
     if( fileSize < 32000000 )
     {
         file = fopen(filename,"w");
         while(true)
         {
-            b = recv(new_socket,buffer,SIZE,0);
+            b = recv(new_socket,buffer,FILEBUF,0);
             if(b <= 0)
             {
                 //error or connection closed
                 break;
             }
             fprintf(file,"%s",buffer);
-            bzero(buffer,SIZE);
+            bzero(buffer,FILEBUF);
         }
     }else
     {
